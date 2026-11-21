@@ -1,8 +1,11 @@
 from datetime import datetime
+from pathlib import Path
 
 from airflow import DAG
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from airflow.providers.standard.operators.bash import BashOperator
+
+POD_TEMPLATE = Path(__file__).parent / "pod_templates" / "task-pod.yaml"
 
 with DAG(
     dag_id="tag_sync_demo",
@@ -11,24 +14,22 @@ with DAG(
     start_date=datetime(2025, 1, 1),
     schedule=None,
     catchup=False,
-    tags=["dap3", "git-sync", "v3"],
+    tags=["dap3", "git-sync", "v5"],
 ) as dag:
     show_dag_revision = BashOperator(
         task_id="show_dag_revision",
-        bash_command="echo 'DAG code from dap3 (v3)'",
+        bash_command="echo 'DAG code from dap3 (v5)'",
     )
+
     show_worker = BashOperator(
         task_id="show_worker",
-        bash_command="echo task is running; hostname; sleep 15",
+        bash_command="echo task is running; hostname",
     )
+
     execute_version = KubernetesPodOperator(
         task_id="execute_version",
-        name="execute-version",
         namespace="airflow-dev-namespace",
-        image="dap3-task:local",
-        image_pull_policy="IfNotPresent",
-        cmds=["sh", "-c"],
-        arguments=["echo task pod started; hostname; sleep 10"],
+        pod_template_file=str(POD_TEMPLATE),
         in_cluster=True,
         get_logs=True,
         on_finish_action="keep_pod",
