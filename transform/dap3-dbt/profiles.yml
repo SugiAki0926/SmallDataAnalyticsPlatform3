@@ -1,0 +1,6 @@
+dap3:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: /tmp/dap3.duckdb

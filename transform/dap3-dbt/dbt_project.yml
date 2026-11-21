@@ -1,0 +1,5 @@
+name: dap3
+version: "1.0.0"
+config-version: 2
+profile: dap3
+model-paths: ["models"]
