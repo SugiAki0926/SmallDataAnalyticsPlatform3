@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from airflow import DAG
+from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from airflow.providers.standard.operators.bash import BashOperator
 
 with DAG(
@@ -20,4 +21,17 @@ with DAG(
         task_id="show_worker",
         bash_command="echo task is running; hostname; sleep 15",
     )
-    show_dag_revision >> show_worker
+    execute_version = KubernetesPodOperator(
+        task_id="execute_version",
+        name="execute-version",
+        namespace="airflow-dev-namespace",
+        image="dap3-task:local",
+        image_pull_policy="IfNotPresent",
+        cmd=["sh", "-c"],
+        arguments=["echo task pod started; hostname; sleep 10"],
+        n_cluster=True,
+        get_logs=True,
+        on_finish_action="keep_pod",
+    )
+
+    show_dag_revision >> show_worker >> execute_version
