@@ -5,6 +5,8 @@ from airflow.providers.standard.operators.bash import BashOperator
 
 with DAG(
     dag_id="tag_sync_demo",
+    name="タグのDAG Syncデモ",
+    description="タグのDAG Syncデモ",
     start_date=datetime(2025, 1, 1),
     schedule=None,
     catchup=False,
