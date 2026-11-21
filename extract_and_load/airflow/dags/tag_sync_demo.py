@@ -27,9 +27,9 @@ with DAG(
         namespace="airflow-dev-namespace",
         image="dap3-task:local",
         image_pull_policy="IfNotPresent",
-        cmd=["sh", "-c"],
+        cmds=["sh", "-c"],
         arguments=["echo task pod started; hostname; sleep 10"],
-        n_cluster=True,
+        in_cluster=True,
         get_logs=True,
         on_finish_action="keep_pod",
     )
