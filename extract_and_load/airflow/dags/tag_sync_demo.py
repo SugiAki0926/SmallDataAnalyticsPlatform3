@@ -1,12 +1,12 @@
 from datetime import datetime
 
-from airflow import DAG
 from airflow.providers.standard.operators.bash import BashOperator
+from airflow.sdk import DAG
 
 with DAG(
     dag_id="tag_sync_demo",
-    name="タグのDAG Syncデモ",
-    description="タグのDAG Syncデモ",
+    dag_display_name="タグのDAG Syncデモ",
+    description="Gitタグの更新がAirflowに反映されることを確認する",
     start_date=datetime(2025, 1, 1),
     schedule=None,
     catchup=False,
