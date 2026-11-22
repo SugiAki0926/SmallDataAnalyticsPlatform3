@@ -7,6 +7,8 @@ from airflow.providers.standard.operators.bash import BashOperator
 
 POD_TEMPLATE = Path(__file__).parent / "pod_templates" / "task-pod.yaml"
 
+def broken_for_ci_test(
+
 with DAG(
     dag_id="tag_sync_demo",
     dag_display_name="タグのDAG Syncデモ",
@@ -35,4 +37,4 @@ with DAG(
         on_finish_action="keep_pod",
     )
 
-    show_dag_revision show_worker >> execute_version
+    show_dag_revision >> show_worker >> execute_version
