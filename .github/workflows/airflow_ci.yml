@@ -24,22 +24,27 @@ jobs:
             -w /workspace \
             apache/airflow:3.2.2 \
             python - <<'PY'
-            from pathlib import Path
-            import yaml
-            from airflow.dag_processing.dagbag import DagBag
-            base = Path("extract_and_load/airflow/dags")
-            yaml_files = list(base.rglob("*.yml")) + list(base.rglob("*.yaml"))
-            for p in yaml_files:
-                with p.open("r", encoding="utf-8") as f:
-                    yaml.safe_load(f)
-                print(f"YAML OK: {p}")
-            dag_bag = DagBag(
-                dag_folder="extract_and_load/airflow/dags",
-                include_examples=False,
-            )
-            if dag_bag.import_errors:
-                raise SystemExit(f"DAG import errors: {dag_bag.import_errors}")
-            if "tag_sync_demo" not in dag_bag.dags:
-                raise SystemExit("tag_sync_demo was not found")
-            print("DAG parse passed:", sorted(dag_bag.dags.keys()))
-            PY
+          from pathlib import Path
+          import yaml
+          from airflow.dag_processing.dagbag import DagBag
+
+          base = Path("extract_and_load/airflow/dags")
+          yaml_files = list(base.rglob("*.yml")) + list(base.rglob("*.yaml"))
+          for p in yaml_files:
+              with p.open("r", encoding="utf-8") as f:
+                  yaml.safe_load(f)
+              print(f"YAML OK: {p}")
+
+          dag_bag = DagBag(
+              dag_folder="extract_and_load/airflow/dags",
+              include_examples=False,
+          )
+
+          if dag_bag.import_errors:
+              raise SystemExit(f"DAG import errors: {dag_bag.import_errors}")
+
+          if "tag_sync_demo" not in dag_bag.dags:
+              raise SystemExit("tag_sync_demo was not found")
+
+          print("DAG parse passed:", sorted(dag_bag.dags.keys()))
+          PY
