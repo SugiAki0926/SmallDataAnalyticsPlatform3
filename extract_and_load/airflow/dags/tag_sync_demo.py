@@ -20,6 +20,7 @@ with DAG(
         task_id="show_dag_revision",
         bash_command="echo 'DAG code from dap3 (v5)'",
     )
+    xyz
 
     show_worker = BashOperator(
         task_id="show_worker",
