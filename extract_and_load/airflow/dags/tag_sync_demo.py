@@ -7,6 +7,7 @@ from airflow.providers.standard.operators.bash import BashOperator
 
 POD_TEMPLATE = Path(__file__).parent / "pod_templates" / "task-pod.yaml"
 
+
 with DAG(
     dag_id="tag_sync_demo",
     dag_display_name="タグのDAG Syncデモ",
