@@ -1,0 +1,2 @@
+namespace: airflow-prod-namespace
+pod_template_file: pod_templates/task-pod-prod.yaml

@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: dap3-task-template
+spec:
+  restartPolicy: Never
+  volumes:
+    - name: git-repo
+      emptyDir: {}
+  initContainers:
+    - name: git-sync
+      image: registry.k8s.io/git-sync/git-sync:v4.3.0
+      env:
+        - name: GITSYNC_REPO
+          value: https://github.com/SugiAki0926/SmallDataAnalyticsPlatform3.git
+        - name: GITSYNC_REF
+          value: airflow-dag-prod-tag
+        - name: GITSYNC_ROOT
+          value: /app/git
+        - name: GITSYNC_LINK
+          value: repo
+        - name: GITSYNC_ONE_TIME
+          value: "true"
+      volumeMounts:
+        - name: git-repo
+          mountPath: /app/git
+  containers:
+    - name: base
+      image: dap3-task:local
+      imagePullPolicy: IfNotPresent
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          echo "task code commit:"
+          basename "$(readlink /app/git/repo)"
+          exec /app/git/repo/app/run.sh
+      volumeMounts:
+        - name: git-repo
+          mountPath: /app/git
