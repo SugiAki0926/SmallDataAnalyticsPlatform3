@@ -1,0 +1,31 @@
+name: airflow_deploy_dev
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'extract_and_load/airflow/**'
+      - 'transform/dap3-dbt/**'
+
+jobs:
+  airflow_ci:
+    uses: ./.github/workflows/airflow_ci.yml
+    permissions:
+      contents: read
+
+  update_dev_tag:
+    needs: airflow_ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update airflow-dag-dev-tag to current main commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -f airflow-dag-dev-tag "$GITHUB_SHA"
+          git push --force origin refs/tags/airflow-dag-dev-tag
