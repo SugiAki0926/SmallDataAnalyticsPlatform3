@@ -1,0 +1,26 @@
+name: airflow_deploy_prod
+
+on:
+  push:
+    branches:
+      - release-airflow-prod-branch
+
+jobs:
+  airflow_ci:
+    uses: ./.github/workflows/airflow_ci.yml
+    permissions:
+      contents: read
+
+  update_prod_tag:
+    needs: airflow_ci
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update airflow-dag-prod-tag to pushed commit
+        run: |
+          git tag -f airflow-dag-prod-tag "$GITHUB_SHA"
+          git push --force origin refs/tags/airflow-dag-prod-tag

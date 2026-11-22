@@ -21,7 +21,7 @@ metadata:
   namespace: airflow-dev-namespace
 subjects:
   - kind: ServiceAccount
-    name: ap3-dev-airflow-worker
+    name: dap3-dev-airflow-worker
     namespace: airflow-dev-namespace
 roleRef:
   apiGroup: rbac.authorization.k8s.io
