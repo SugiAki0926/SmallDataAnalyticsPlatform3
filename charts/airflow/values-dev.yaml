@@ -1,0 +1,16 @@
+executor: KubernetesExecutor
+allowPodLaunching: true
+images:
+  gitSync:
+    repository: registry.k8s.io/git-sync/git-sync
+    tag: v4.3.0
+dags:
+  gitSync:
+    enabled: true
+    repo: https://github.com/SugiAki0926/SmallDataAnalyticsPlatform3.git
+    branch: airflow-dag-dev-tag
+    ref: airflow-dag-dev-tag
+    subPath: extract_and_load/airflow/dags
+env:
+  - name: DAP3_ENV
+    value: "dev"
