@@ -36,4 +36,4 @@ with DAG(
         on_finish_action="keep_pod",
     )
 
-    show_dag_revision  show_worker >> execute_version
+    show_dag_revision >> show_worker >> execute_version
