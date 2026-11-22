@@ -1,13 +1,14 @@
 from datetime import datetime
 from pathlib import Path
 
+impost broken_for_ci_test
+
 from airflow import DAG
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from airflow.providers.standard.operators.bash import BashOperator
 
 POD_TEMPLATE = Path(__file__).parent / "pod_templates" / "task-pod.yaml"
 
-def broken_for_ci_test(
 
 with DAG(
     dag_id="tag_sync_demo",
