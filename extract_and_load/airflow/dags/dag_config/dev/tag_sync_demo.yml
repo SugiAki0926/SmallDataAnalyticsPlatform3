@@ -1,0 +1,2 @@
+namespace: airflow-dev-namespace
+pod_template_file: pod_templates/task-pod-dev.yaml
