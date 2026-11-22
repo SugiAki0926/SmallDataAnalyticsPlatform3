@@ -15,11 +15,11 @@ with DAG(
     start_date=datetime(2025, 1, 1),
     schedule=None,
     catchup=False,
-    tags=["dap3", "git-sync", "v5"],
+    tags=["dap3", "git-sync", "v6"],
 ) as dag:
     show_dag_revision = BashOperator(
         task_id="show_dag_revision",
-        bash_command="echo 'DAG code from dap3 (v5)'",
+        bash_command="echo 'DAG code from dap3 (v6)'",
     )
 
     show_worker = BashOperator(
