@@ -2,6 +2,9 @@
 
 Kubernetes 上の Apache Airflow が、Git リポジトリの**Gitタグ**を [git-sync](https://github.com/kubernetes/git-sync) で同期する小さな小さなデータ分析基盤です。作って壊すデータ基盤の第3弾で、前回同様、最小構成のためネットワーク、セキュリティ、運用2必要な要素は含まれません。
 
+
+![Small Data Analytics Platform3](sdap3.png)
+
 ## git-syncの使用方法について
 
 [git-sync](https://github.com/kubernetes/git-sync) に記載されている通りではあるが、Gitリポジトリをローカルディレクトリにプルし、しばらく待機してから、この処理を繰り返すシンプルなコマンド。リモートリポジトリに変更があると、その変更はローカルにも同期できる。Kubernetesにおける理想的な「サイドカー」コンテナであり、リポジトリからファイルをダウンロードして、アプリケーションがそれらを利用できるようにしてくれます。
@@ -16,3 +19,38 @@ Kubernetes 上の Apache Airflow が、Git リポジトリの**Gitタグ**を [g
    DAG の `KubernetesPodOperator` が、別の Pod を起動します（[KubernetesPodOperator](https://airflow.apache.org/docs/apache-airflow-providers-cncf-kubernetes/stable/operators.html)）。その Pod テンプレートでは、公式イメージ `registry.k8s.io/git-sync/git-sync:v4.3.0` を [init container](https://kubernetes.io/docs/concepts/workloads/pods/init-containers/) にし、`GITSYNC_REF` に同じGitタグ、`GITSYNC_ONE_TIME=true` を渡しています。`emptyDir` を共有し、メインコンテナは `/app/git/repo` の `app/run.sh` を実行します。init container はアプリより先に完了します。
 
 DAG をパースする git-sync と、実行用 Pod の git-sync は別のコンテナです。どちらもGitタグ名を見ているため、Gitタグが進んだあとに起動した実行用 Pod は、DAG を読んだときとは別のコミットを取ることがあります。起動済みの Pod は、そのボリュームに取得したコミットのまま動きます。
+
+## ディレクトリ構成
+
+```text
+SmallDataAnalyticsPlatform3
+├── .github/workflows/
+│   ├── airflow_ci.yml                      # PR 上で DAG の import と YAML を検証する
+│   ├── airflow_deploy_dev.yml              # main への対象 push で airflow-dag-dev-tag を進める
+│   └── airflow_deploy_prod.yml             # release ブランチへの push で airflow-dag-prod-tag を進める
+├── app/                                    #
+│   ├── VERSION                             # タスク実行時に表示するバージョンの文字列(変更の検証用ファイル)
+│   └── run.sh                              # バージョンを表示し、同期した dbt プロジェクトを実行
+├── charts/airflow/                         # k8sの開発/本番 Airflow の Helm 値。DAG 用 git-sync は開発/本番タグ
+│   ├── values-dev.yaml                     #
+│   └── values-prod.yaml                    #
+├── extract_and_load/airflow/dags/          #
+│   ├── dag_config/                         # k8sの開発/本番の Namespace と Pod テンプレート名
+│   │   ├── dev/tag_sync_demo.yml           #
+│   │   └── prod/tag_sync_demo.yml          #
+│   ├── pod_templates/                      # 開発/本番タグのコードを取得し app/run.sh を実行する Pod
+│   │   ├── task-pod-dev.yaml               #
+│   │   └── task-pod-prod.yaml              #
+│   └── tag_sync_demo.py                    # 環境ごとの YAML を読み、確認用タスクと実行用 Pod を起動する DAG
+├── images/task/                            #
+│   └── Dockerfile                          # 実行用 Pod のイメージ。dbt-duckdb を入れる
+├── k8s-manifests/                          # 開発/本番 worker に、開発 Namespace で Pod を作る権限を付ける
+│   ├── kpo-task-rbac-dev.yaml              #
+│   └── kpo-task-rbac-prod.yaml             #
+├── kind-config.yaml                        # ローカル kind クラスター。control-plane 1 台
+└── transform/dap3-dbt/                     #
+    ├── dbt_project.yml                     #
+    ├── profiles.yml                        #
+    └── models/                             #
+        └── one_value.sql                   # dbt run が作る 1 row model
+```
