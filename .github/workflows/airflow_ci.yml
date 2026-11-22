@@ -19,14 +19,14 @@ jobs:
 
       - name: Validate YAML and parse DAGs in Airflow 3.2.2 container
         run: |
-          docker run --rm \
+          docker run --rm -i \
             -v "${GITHUB_WORKSPACE}:/workspace:ro" \
             -w /workspace \
             apache/airflow:3.2.2 \
             python - <<'PY'
           from pathlib import Path
           import yaml
-          from airflow.models import DagBag
+          from airflow.models.dagbag import DagBag
 
           base = Path("extract_and_load/airflow/dags")
           yaml_files = list(base.rglob("*.yml")) + list(base.rglob("*.yaml"))
@@ -38,6 +38,7 @@ jobs:
           dag_bag = DagBag(
               dag_folder="extract_and_load/airflow/dags",
               include_examples=False,
+              read_dags_from_db=False,
           )
 
           if dag_bag.import_errors:

@@ -1,8 +1,6 @@
 from datetime import datetime
 from pathlib import Path
 
-impost broken_for_ci_test
-
 from airflow import DAG
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from airflow.providers.standard.operators.bash import BashOperator
@@ -38,4 +36,4 @@ with DAG(
         on_finish_action="keep_pod",
     )
 
-    show_dag_revision >> show_worker >> execute_version
+    show_dag_revision  show_worker >> execute_version
